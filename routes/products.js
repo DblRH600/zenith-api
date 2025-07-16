@@ -6,18 +6,70 @@ const router = express.Router()
 /**
  * POST route to create new product(s)
  */
+router.post('/', async (req, res) => {
+  try {
+    const newProduct = new Product(req.body)
+    const savedProduct = await newProduct.save()
+    res.status(201).json(savedProduct)
+  } catch (error) {
+    console.error('Error creating product: ', error)
+    res.status(400).json({ error: error.message })
+  }
+})
 
 /**
  * GET route to fetch a product by ID
  */
+router.get('/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const product = await Product.findById(id)
+    if (!product) {
+      return res.status(404).json({ message: 'Product Not Found' })
+    }
+    res.status(200).json(product)
+  } catch (error) {
+    console.error('Error fetching product: ', error)
+    res.status(404).json({ error: 'Product Not Found' })
+  }
+})
 
 /**
  * PUT route to update a product by ID
  */
+router.put('/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    })
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product Not Found' })
+    }
+    res.json(updatedProduct)
+  } catch (error) {
+    console.error('Error updating product: ', error)
+    return res.status(404).json({ error: error.message })
+  }
+})
 
 /**
  * DELETE route to delete a product by ID
  */
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(id)
+    if (!deletedProduct) {
+      return res.status(404).json({ message: 'Product Not Found' })
+    }
+    res.json(deletedProduct)
+  } catch (error) {
+    console.error('Error deleting product: ', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
 
 /**
  * GET route to query and filter product information
