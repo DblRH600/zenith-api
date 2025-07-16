@@ -75,12 +75,39 @@ router.delete('/:id', async (req, res) => {
  * GET route to query and filter product information
  * @description This route will allow users to query products based on the various schema fields
  */
+router.get('/', async (req, res) => {
+    const { category, minPrice, maxPrice, sortBy, page = 1, limit = 10 } = req.query
+
+    try {
+        const query = {}
+        if (category) query.category = category
+        if (minPrice) query.price = { ...query.price, $gte: Number(minPrice) }
+        if (maxPrice) query.price = { ...query.price, $lte: Number(maxPrice) }
+
+        const sort = {}
+        if (sortBy) {
+            const [field, order] = sortBy.split('_')
+            sort[field] = order === 'asc' ? 1 : -1
+        }
+
+        const products = await Product.find(query)
+        .select({ __v: 0 })
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+
+        res.status(200).json(products)
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products' })
+    }
+})
 
 /**
  * GET route to seed sample product data
  * @description This route will populate the db with sample data for testing
  */
-router.get('db/seed', async (req, res) => {
+router.get('/db/seed', async (req, res) => {
   try {
     await Product.deleteMany({})
 
