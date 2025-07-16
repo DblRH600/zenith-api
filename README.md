@@ -40,11 +40,11 @@ Understanding these REST principles is essential before working with or extendin
 
 ### Screenshot
 
-![](./assets/images/Solution_1.jpg)
+![]()
 
-![](./assets/images/Solution_2.jpg)
+![]()
 
-![](./assets/images/Solution_3.jpg)
+![]()
 
 ### Links
 
@@ -58,7 +58,7 @@ Understanding these REST principles is essential before working with or extendin
 - NPM
 - Node.js
 - Express
-- Axios
+- Mongoose
 - DOTENV
 
 ### What I learned
