@@ -1,6 +1,6 @@
 # Mod13 SBA: Build a Product API
 
-This is a solution using Express to the [Module 13 SBA](https://ps-lms.vercel.app/curriculum/se/319/sba).  
+This is a solution using Express, MongoDB, and Mongoose to build out [Module 13 SBA](https://ps-lms.vercel.app/curriculum/se/319/sba).  
 
 ## Table of contents
 
