@@ -26,13 +26,14 @@ This project follows RESTful API principles to ensure a clean, scalable, and pre
 - Stateless Requests: Each request includes all necessary information. The server does not remember previous interactions.
 
 - Uniform Interface:
-    - Resource-Based URLs: Use nouns to represent resources (e.g., /api/movies/search).
+    - Resource-Based URLs: Use nouns to represent resources (e.g., /api/products).
 
-    - HTTP Methods:
+    - HTTP Methods (Full CRUD Implementation):
         - GET: Retrieve data
         - POST: Create new data
         - PUT / PATCH: Update data
         - DELETE: Remove data
+        - QUERY: Search and Filter data based on search criteria
 
     - Standard Format: Data is exchanged in JSON.
 
@@ -40,15 +41,15 @@ Understanding these REST principles is essential before working with or extendin
 
 ### Screenshot
 
-![]()
+![](./assets/images/Mod13_Solution_GET_Ex.jpg)
 
-![]()
+![](./assets/images/Mod13_Solution_POST_Ex.jpg)
 
-![]()
+![](./assets/images/Mod13_Solution_Query_Ex.jpg)
 
 ### Links
 
-- Solution URL: [GitHub: zenith-api]()
+- Solution URL: [GitHub: zenith-api](https://github.com/DblRH600/zenith-api?tab=readme-ov-file#screenshot)
 - Live Site URL: []()
 
 ## My process
@@ -58,20 +59,52 @@ Understanding these REST principles is essential before working with or extendin
 - NPM
 - Node.js
 - Express
-- Mongoose
 - DOTENV
+- MongoDB
+- Mongoose
 
 ### What I learned
 
-Building the *Zenith-API* tested my understanding of ***Express*** and how to set up the ***Project Structure & Configuration*** correctly. Additionally, the project further tested my understanding of how to setup ***express.Router()*** routes as well as futher practice with utilizing **try** / **catch** blocks for **error** handling using ***async*** / ***await*** functions  
+Building the *Zenith-API* tested my understanding of ***Express***, ***Mongoose***, and how to set up the ***Project Structure & Configuration*** correctly. Additionally, the project further tested my understanding of how to setup ***express.Router()*** routes as well as futher practice with utilizing **try** / **catch** blocks for **error** handling using ***async*** / ***await*** functions and implementing full **CRUD** functions.
 
 
-```js 
+```js routes/products.js
+/**
+ * GET route to query and filter product information
+ * @description This route will allow users to query products based on the various schema fields
+ */
+router.get('/', async (req, res) => {
+    const { category, minPrice, maxPrice, sortBy, page = 1, limit = 10 } = req.query
+
+    try {
+        const query = {}
+        if (category) query.category = category
+        if (minPrice) query.price = { ...query.price, $gte: Number(minPrice) }
+        if (maxPrice) query.price = { ...query.price, $lte: Number(maxPrice) }
+
+        const sort = {}
+        if (sortBy) {
+            const [field, order] = sortBy.split('_')
+            sort[field] = order === 'asc' ? 1 : -1
+        }
+
+        const products = await Product.find(query)
+        .select({ __v: 0 })
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+
+        res.status(200).json(products)
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching products' })
+    }
+})
 ```
 
 ### Continued development
 
-There is still a *well* of *informaiton* to learn and *apply* regarding the use of **Express**, **Axios**, and the many functions and performances that can be used in setting up a **server**. Gaining a deeper understanding will help with the next phases of ***Full-Stack*** Development; connecting to a **Database** then establishing the **Front-End** to **Server** to **DB** (*Back-End*) connection.
+There is still a *well* of *informaiton* to learn and *apply* regarding the use of **Express**, **MongoDB**, **Mongoose**, and the many functions and performances that can be used in setting up a **server**. Gaining a deeper understanding of full **CRUD** implementation will help with the next phases of ***Full-Stack*** Development; establishing the **Front-End** to **Server** to **DataBase** connection.
 
 ### Reflections
 
@@ -79,8 +112,10 @@ There is still a *well* of *informaiton* to learn and *apply* regarding the use 
 
 - [EXPRESSJS.COM](https://expressjs.com/en/5x/api.html#res.sendFile) - ***expressjs.com*** contains well documented information details about **routes**.
 
-- [AXIOS](https://axios-http.com/docs/intro) - ***axios.com*** can be used to deepen one's understanding about the functionality **axios** is capable of performing that can be incorporated into a **server**.
+- [MONGOOSE](https://mongoosejs.com/docs/index.html) - ***mongoosejs.com*** can be used to deepen one's understanding about the functionality **mongoose** is capable of performing that can be incorporated into a **server**.
 
 - [REST API Tutorial](https://restfulapi.net/) - ***restfulapi.net*** provides background information and tutroials on how to build web-based **APIs** (*Application Programming Interfaces*).
+
+- [Blog: How to Build a RESTful API Using Node, Express, and MongoDB](https://www.freecodecamp.org/news/build-a-restful-api-using-node-express-and-mongodb/)
 
 ## Acknowledgments
